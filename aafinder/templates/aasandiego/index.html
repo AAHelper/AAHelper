@@ -1,0 +1,23 @@
+<!-- form action="{% url 'aafinder:index' %}" method="post">
+{% csrf_token %}
+{{form.as_ul}}
+<input type="submit" value="Vote" />
+</form -->
+<style>
+tr:hover {
+    background: grey !important;
+}
+
+</style>
+{% if latest_meeting_list %}
+	<H1>Showing {{today}} Meetings from {{now|date:"h:i A"}} to {{hours_from_now|date:"h:i A"}}</h1>
+    <table>
+    {% for meeting in latest_meeting_list %}
+        <tr>
+        	<td><a href="{% url 'aafinder:detail' meeting.id %}">{{ meeting.name }} - {{meeting.time}}</a></td>
+        	<td>{% for code in meeting.codes.all %}{{code.description }}{% if not forloop.last %}, {% endif %}{% endfor %}</td></tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No meetings are available.</p>
+{% endif %}

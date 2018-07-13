@@ -1,0 +1,16 @@
+<html>
+<head>
+	<title>{{object.name}}</title>
+</head>
+<body>
+	<table>
+		<tr><td>Name:</td><td>{{object.name}}</td></tr>
+		<tr><td>location:</td><td>{{object.location.address_string}}</td></tr>
+		<tr><td>time:</td><td>{{object.time}}</td></tr>
+		<tr><td>url:</td><td>{{object.url}}</td></tr>
+		<tr><td>area:</td><td>{{object.area}}</td></tr>
+		<tr><td>codes:</td><td>{% for o in object.codes.all %}{{o.description}}{% endfor %}</td></tr>
+		<tr><td>types:</td><td>{% for o in object.types.all %}{{o.type}}{% endfor %}</td></tr>
+	</table>
+</body>
+</html>
