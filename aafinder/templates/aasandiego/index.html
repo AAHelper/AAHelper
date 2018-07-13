@@ -15,8 +15,8 @@
 <input type="submit" value="Vote" />
 </form -->
 
-{% if latest_meeting_list %}
 	<h1>Showing {{today}} Meetings from {{now|date:"h:i A"}} to {{hours_from_now|date:"h:i A"}}</h1>
+{% if latest_meeting_list %}
     <table>
     {% for meeting in latest_meeting_list %}
         <tr>
