@@ -1,16 +1,22 @@
+<html>
+<head>
+    <title>AA San Diego Helper</title>
+
+    <style>
+    tr:hover {
+        background: grey !important;
+    }
+    </style>
+</head>
+<body>
 <!-- form action="{% url 'aafinder:index' %}" method="post">
 {% csrf_token %}
 {{form.as_ul}}
 <input type="submit" value="Vote" />
 </form -->
-<style>
-tr:hover {
-    background: grey !important;
-}
 
-</style>
 {% if latest_meeting_list %}
-	<H1>Showing {{today}} Meetings from {{now|date:"h:i A"}} to {{hours_from_now|date:"h:i A"}}</h1>
+	<h1>Showing {{today}} Meetings from {{now|date:"h:i A"}} to {{hours_from_now|date:"h:i A"}}</h1>
     <table>
     {% for meeting in latest_meeting_list %}
         <tr>
@@ -21,3 +27,4 @@ tr:hover {
 {% else %}
     <p>No meetings are available.</p>
 {% endif %}
+</body>
