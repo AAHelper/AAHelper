@@ -1,0 +1,26 @@
+{% load static %}
+{% spaceless %}
+<html>
+<head>
+    <title>AA San Diego Helper</title>
+    <link rel="stylesheet" href="{% static 'styles.min.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="root">
+        <header class="row">
+            {% block header %}{% include 'header.html' %}{% endblock %}
+        </header>
+        <div class="row" id="doc-wrapper">
+            <input id="doc-drawer-checkbox" class="drawer" value="on" type="checkbox">
+{% comment %}            <nav class="col-md-3 col-lg-2" id="nav-drawer">
+                {% block sidebar %}{% include 'sidebar.html' %}{% endblock %}
+            </nav>
+{% endcomment %}
+            <main class="col-sm-12 col-md-8 col-lg-12" id="doc-content">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+</body>
+{% endspaceless %}
