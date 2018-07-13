@@ -13,11 +13,10 @@
         </header>
         <div class="row" id="doc-wrapper">
             <input id="doc-drawer-checkbox" class="drawer" value="on" type="checkbox">
-{% comment %}            <nav class="col-md-3 col-lg-2" id="nav-drawer">
+            <nav class="col-md-2 col-lg-1" id="nav-drawer">
                 {% block sidebar %}{% include 'sidebar.html' %}{% endblock %}
             </nav>
-{% endcomment %}
-            <main class="col-sm-12 col-md-8 col-lg-12" id="doc-content">
+            <main class="col-sm-11 col-md-8 col-lg-11" id="doc-content">
                 {% block content %}{% endblock %}
             </main>
         </div>
