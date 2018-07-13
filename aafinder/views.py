@@ -19,7 +19,7 @@ class IndexView(generic.ListView):
         day_word = now.strftime("%A")
         # now = now - datetime.timedelta(hours=1)
 
-        hours_from_now = now + datetime.timedelta(hours=2)
+        hours_from_now = now + datetime.timedelta(hours=3)
 
         return Meeting.objects.filter(
             types__type=day_word,
@@ -32,7 +32,7 @@ class IndexView(generic.ListView):
 
         context['today'] = datetime.date.today().strftime("%A")
         context['now'] = datetime.datetime.now()
-        context['hours_from_now'] = context['now'] + datetime.timedelta(hours=2)
+        context['hours_from'] = context['now'] + datetime.timedelta(hours=3)
 
         context['form'] = MeetingForm()
         return context
@@ -41,4 +41,3 @@ class IndexView(generic.ListView):
 class DetailView(generic.DetailView):
     model = Meeting
     template_name = 'aasandiego/detail.html'
-
