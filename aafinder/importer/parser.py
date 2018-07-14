@@ -1,10 +1,11 @@
-from collections import defaultdict
+import re
+from operator import itemgetter
 from pathlib import Path
 from lxml import html
+from lxml.html.clean import Cleaner
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs
 from .utils import get_or_create_downloads_folder
-from .converter import normalize_children
 from aafinder.models import (
     MeetingType, Location,
     Meeting, MeetingCode, MeetingArea
@@ -27,51 +28,61 @@ def get_flattened_text(el):
     return ''.join(out)
 
 
-def extract_address_and_url(el):
-    try:
-        anchor = el.xpath("./a")[0]
-    except IndexError:
-        return '', ''
-
-    url = urlparse(anchor.attrib['href'])
-    query = parse_qs(url.query)
-
-    if 'q' not in query:
-        return '', anchor.attrib['href']
-
-    return query['q'][0], anchor.attrib['href']
-
-
 class Parser:
     downloads_dir = get_or_create_downloads_folder()
     name = None
     code_map = {c.code: c for c in MeetingCode.objects.all()}
+    tds = None
+    day = None
+    c_filename = None
+    time_td = itemgetter(0)
+    meeting_name_td = itemgetter(1)
+    location_td = itemgetter(1)
+    anchor_td = itemgetter(1)
+    codes_td = itemgetter(2)
+    days_td = itemgetter(2)
+    area_td = itemgetter(3)
+    cleaner = Cleaner(
+        remove_tags=["p", "span", "font"], kill_tags=['script', 'style'])
+    group_days = {
+        'Daily': [
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+            "Saturday", "Sunday"],
+        'Mo-Su': [
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+            "Saturday", "Sunday"],
+        'Mo-Sa': [
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+            "Saturday"],
+        'Mo-Sat': [
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+            "Saturday"],
+        'Mo-Fr': ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        'Sat-Sun': ["Saturday", "Sunday"],
+        'Mo': ['Monday'],
+        'Tu': ['Tuesday'],
+        'We': ['Wednesday'],
+        'Th': ['Thursday'],
+        'Fr': ['Friday'],
+        'Sa': ['Saturday'],
+        'Su': ['Sunday'],
+        'Monday': ['Monday'],
+        'Tuesday': ['Tuesday'],
+        'Wednesday': ['Wednesday'],
+        'Thursday': ['Thursday'],
+        'Friday': ['Friday'],
+        'Saturday': ['Saturday'],
+        'Sunday': ['Sunday'],
+    }
+    group_days['Mo-Sun'] = group_days['Mo-Su']
+    day_re = re.compile(r'([\w]+-[\w]+)')
+    weekday_re = re.compile(
+        r'([Mo]{2}|[Tu]{2}|[We]{2}|[Th]{2}|[Fr]{2}|[Sa]{2}|[Su]{2})')
 
-    def parse_all(self):
-        count = 0
-        for path in Path(self.downloads_dir).iterdir():
-            if path.name != 'legend.html':
-                self.name = path.name.split(".")[0]
-                if self.name[-1].isnumeric():
-                    self.name = self.name[:-1]
-                print(path)
-                data = self.parse(path)
-                # import ipdb; ipdb.set_trace()
-                count += self.insert_data(data)
-        return count
+    @property
+    def time(self):
+        time = get_flattened_text(self.time_td(self.tds)).strip()
 
-    def parse(self, path):
-        print(f"\n\n\nParsing file {path}\n\n")
-        dom = html.document_fromstring(path.read_text())
-        normalize_children(dom)
-        # print(html.tostring(dom))
-        rows = dom.xpath('//table[@width="90%"]/tr[not(self::td)]')
-        if any([r.xpath("./td/strong") for r in rows]):
-            return self.parse_with_days(rows)
-        return self.parse_without_days(rows)
-
-    def _parse_inner(self, tds):
-        time = get_flattened_text(tds[0]).strip()
         if "::" in time:
             time = time.replace("::", ":")
         if time.endswith("N"):
@@ -88,102 +99,194 @@ class Parser:
                 pass
             else:
                 raise
+        return time
 
-        name = tds[1].text.strip()
+    @property
+    def meeting_name(self):
+        name = self.meeting_name_td(self.tds).text.strip()
         if name is None:
             import ipdb; ipdb.set_trace()
+        return name
 
-        street_address, url = extract_address_and_url(tds[1])
-        street_address = street_address.strip()
+    def _extract_anchor(self, el):
+        try:
+            anchor = el.xpath("./a")[0]
+        except IndexError:
+            return ''
 
-        code = get_flattened_text(tds[2]).strip()
-        codes = code.split()
-        # for code in code.split():
-        #     if code in SPECIAL_CODES:
-        #         codes.append(SPECIAL_CODES[code])
-        # code = ", ".join(codes)
-        area = get_flattened_text(tds[3]).strip()
+        return anchor
 
-        return time, name, street_address, url, code, codes, area
+    @property
+    def street_address(self):
+        anchor = self._extract_anchor(self.anchor_td(self.tds))
 
-    def parse_with_days(self, rows):
-        day_map = defaultdict(list)
-        for i, tr in enumerate(rows[1:]):
-            # print("*" * 100)
-            # print(i, html.tostring(tr))
-
-            tds = tr.xpath("./td")
+        if anchor != '':
 
             try:
-                location_type = tds[1].xpath("./br")[0].tail.strip()
-            except IndexError:
-                this_day = tds[1].xpath("./strong")
-                if this_day:
-                    day = this_day[0].text
-                    continue
+                url = urlparse(anchor.attrib['href'])
+            except Exception as ex:
+                import ipdb; ipdb.set_trace()
 
-            time, name, street_address, url, code, codes, area = self._parse_inner(tds)
-            day_map[day].append({
-                "time": time,
-                "name": name,
-                "street_address": street_address,
-                "location_type": location_type,
-                "codes": codes,
-                "area": area,
-                "url": url,
-            })
+            query = parse_qs(url.query)
 
-        # pprint(day_map)
-        # print("*" * 100)
-        return day_map
+            if 'q' not in query:
+                return ''
 
-    def parse_without_days(self, rows):
+            return query['q'][0].strip()
+
+        return ''
+
+    @property
+    def url(self):
+        anchor = self._extract_anchor(self.anchor_td(self.tds))
+        if anchor != '':
+            return anchor.attrib['href']
+        return ''
+
+    @property
+    def codes(self):
+        codes = get_flattened_text(self.codes_td(self.tds)).strip().split()
+        return codes
+
+    @property
+    def area(self):
+        area = get_flattened_text(self.area_td(self.tds)).strip()
+        if area.startswith("* "):
+            import ipdb; ipdb.set_trace()
+        return area
+
+    @property
+    def location_type(self):
+        try:
+            location_type = self.location_td(self.tds).xpath("./br")[0].tail.strip()
+        except IndexError:
+            return ''
+
+        return location_type
+
+    @property
+    def days(self):
+        day_td = self.days_td(self.tds)
+        print(html.tostring(day_td))
+        # GAH, I hate Regexes, but Whatever
+        td_text = day_td.text.strip()
+        matches = self.day_re.match(td_text)
+        active_days = []
+        if matches:
+            for group in matches.groups():
+                if group in self.group_days:
+                    active_days.extend(self.group_days[group])
+
+            return active_days
+
+        if "," in day_td.text:
+            import ipdb; ipdb.set_trace()
+            matches = self.weekday_re.findall(td_text)
+            if matches:
+                for match in matches:
+                    if match in self.group_days:
+                        active_days.extend(self.group_days[match])
+                return active_days
+
+        if 'Daily' in td_text and 'Sunday' in td_text:
+            for day in self.group_days['Daily']:
+                if day != 'Sunday':
+                    active_days.append(day)
+            return active_days
+
+        if self.day in self.group_days:
+            return self.group_days[self.day]
+
+        if self.name in self.group_days:
+            return self.group_days[self.name]
+
+        import ipdb; ipdb.set_trace()
+        if self.day:
+            return [self.day]
+
+        return [self.name]
+
+    def parse_all(self):
+        count = 0
+        for path in Path(self.downloads_dir).iterdir():
+            self.day = None
+            if path.name != 'legend.html':
+                self.name = path.name.split(".")[0]
+                if self.name[-1].isnumeric():
+                    self.name = self.name[:-1]
+                print(path)
+                data = self.parse(path)
+                count += self.insert_data(data)
+        return count
+
+    def set_default_itemgetters(self):
+        self.time_td = itemgetter(0)
+        self.meeting_name_td = itemgetter(1)
+        self.location_td = itemgetter(1)
+        self.anchor_td = itemgetter(1)
+        self.codes_td = itemgetter(2)
+        self.days_td = itemgetter(2)
+        self.area_td = itemgetter(3)
+
+    def set_meeting_itemgetters(self):
+        self.time_td = itemgetter(0)
+        self.meeting_name_td = itemgetter(1)
+        self.location_td = itemgetter(1)
+        self.anchor_td = itemgetter(1)
+        self.codes_td = itemgetter(3)
+        self.area_td = itemgetter(4)
+
+    def parse(self, path):
+        print(f"\n\nParsing file {path}\n\n")
+        self.c_filename = path
+        dom = html.document_fromstring(path.read_text())
+
+        dom = self.cleaner.clean_html(dom)
+        rows = dom.xpath('//table[@width="90%"]/tr[not(self::td)]')
+
+        self.set_default_itemgetters()
+
+        if 'Meetings' in self.name:
+            self.set_meeting_itemgetters()
+
+        return self._parse(rows)
+
+    def _parse(self, rows):
         locations = []
         for i, tr in enumerate(rows[1:]):
-            # print("*" * 100)
-            # print(i, html.tostring(tr))
 
-            tds = tr.xpath("./td")
-            try:
-                location_type = tds[1].xpath("./br")[0].tail.strip()
-            except IndexError:
-                location_type = ""
-
-            time, name, street_address, url, code, codes, area = self._parse_inner(tds)
+            self.tds = tr.xpath("./td")
+            if self.check_and_set_day():
+                continue
 
             locations.append({
-                "time": time,
-                "name": name,
-                "street_address": street_address,
-                "location_type": location_type,
-                "codes": codes,
-                "area": area,
-                "url": url,
+                "time": self.time,
+                "name": self.meeting_name,
+                "street_address": self.street_address,
+                "location_type": self.location_type,
+                "codes": self.codes,
+                "area": self.area,
+                "url": self.url,
+                "days": self.days,
+                "row": html.tostring(tr),
+                "orig_file": self.c_filename,
             })
 
-        # pprint(locations)
-        # print("*" * 100)
         return locations
+
+    def check_and_set_day(self):
+        this_day = self.tds[1].xpath("./strong")
+        if this_day:
+            self.day = this_day[0].text.strip()
+            return True
+        return False
 
     def insert_data(self, data):
         count = 0
-        if isinstance(data, dict):
-            return self.insert_dict_data(data)
 
         for item in data:
             count += self.insert_list_data(item)
         print(len(data), count)
-        return count
-
-    def insert_dict_data(self, data):
-        count = 0
-        total_items = 0
-        for day, items in data.items():
-            total_items += len(items)
-            for item in items:
-                count += self.insert_list_data(item, day_of_week=day)
-
-        print(total_items, count)
         return count
 
     def insert_list_data(self, item, day_of_week=None):
@@ -197,23 +300,21 @@ class Parser:
                 defaults={
                     'url': item['url'],
                     'area': area,
+                    'row_src': item['row'],
+                    'orig_filename': item['orig_file']
                 }
             )
             if created:
                 count = 1
-            # else:
-            #     import ipdb; ipdb.set_trace()
+
             if item['codes']:
                 for code in item['codes']:
                     if code in self.code_map:
                         meeting.codes.add(self.code_map[code])
-            if day_of_week:
+            for day in item['days']:
+                print(f"adding day {day} to meeting {meeting}")
                 mt, created = MeetingType.objects.get_or_create(
-                    type=day_of_week)
-                meeting.types.add(mt)
-            else:
-                mt, created = MeetingType.objects.get_or_create(
-                    type=self.name)
+                    type=day.strip())
                 meeting.types.add(mt)
 
         return count

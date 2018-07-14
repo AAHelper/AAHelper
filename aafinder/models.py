@@ -44,6 +44,8 @@ class Meeting(models.Model):
         MeetingArea, on_delete=models.CASCADE, blank=True, null=True)
     codes = models.ManyToManyField(MeetingCode)
     types = models.ManyToManyField(MeetingType)
+    row_src = models.TextField(blank=True)
+    orig_filename = models.TextField(blank=True)
 
     def __str__(self):
         return self.name

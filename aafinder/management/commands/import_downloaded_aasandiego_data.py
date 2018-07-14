@@ -43,4 +43,5 @@ class Command(BaseCommand):
             import traceback; traceback.print_exc()
             raise CommandError("Could not import stuff. %s" % str(ex))
 
-        self.stdout.write(self.style.SUCCESS('Successfully imported %s meetings.' % count))
+        self.stdout.write(
+            self.style.SUCCESS('Successfully imported %s meetings.' % count))
