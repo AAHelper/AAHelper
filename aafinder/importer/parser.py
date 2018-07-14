@@ -180,7 +180,6 @@ class Parser:
             return active_days
 
         if "," in day_td.text:
-            import ipdb; ipdb.set_trace()
             matches = self.weekday_re.findall(td_text)
             if matches:
                 for match in matches:
@@ -200,7 +199,6 @@ class Parser:
         if self.name in self.group_days:
             return self.group_days[self.name]
 
-        import ipdb; ipdb.set_trace()
         if self.day:
             return [self.day]
 
