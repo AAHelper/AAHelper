@@ -42,6 +42,8 @@ class Parser:
     codes_td = itemgetter(2)
     days_td = itemgetter(2)
     area_td = itemgetter(3)
+    meeting_areas = {}
+    meeting_types = {}
     cleaner = Cleaner(
         remove_tags=["p", "span", "font"], kill_tags=['script', 'style'])
     group_days = {
@@ -167,7 +169,6 @@ class Parser:
     @property
     def days(self):
         day_td = self.days_td(self.tds)
-        print(html.tostring(day_td))
         # GAH, I hate Regexes, but Whatever
         td_text = day_td.text.strip()
         matches = self.day_re.match(td_text)
@@ -212,7 +213,6 @@ class Parser:
                 self.name = path.name.split(".")[0]
                 if self.name[-1].isnumeric():
                     self.name = self.name[:-1]
-                print(path)
                 data = self.parse(path)
                 count += self.insert_data(data)
         return count
@@ -235,7 +235,7 @@ class Parser:
         self.area_td = itemgetter(4)
 
     def parse(self, path):
-        print(f"\n\nParsing file {path}\n\n")
+        print(f"Parsing file {path}")
         self.c_filename = path
         dom = html.document_fromstring(path.read_text())
 
@@ -284,7 +284,7 @@ class Parser:
 
         for item in data:
             count += self.insert_list_data(item)
-        print(len(data), count)
+        print("Imported {0} of {1} items".format(count, len(data)))
         return count
 
     def insert_list_data(self, item, day_of_week=None):
@@ -292,7 +292,12 @@ class Parser:
         with transaction.atomic():
             location, created = Location.objects.get_or_create(
                 address_string=item['street_address'])
-            area, created = MeetingArea.objects.get_or_create(area=item['area'])
+            if item['area'] not in self.meeting_areas:
+                area, created = MeetingArea.objects.get_or_create(area=item['area'])
+                self.meeting_areas.update({item['area']: area})
+            else:
+                area = self.meeting_areas[item['area']]
+
             meeting, created = Meeting.objects.get_or_create(
                 name=item['name'], location=location, time=item['time'],
                 defaults={
@@ -309,10 +314,16 @@ class Parser:
                 for code in item['codes']:
                     if code in self.code_map:
                         meeting.codes.add(self.code_map[code])
+
             for day in item['days']:
-                print(f"adding day {day} to meeting {meeting}")
-                mt, created = MeetingType.objects.get_or_create(
-                    type=day.strip())
+                day = day.strip()
+                if day not in self.meeting_types:
+                    mt, created = MeetingType.objects.get_or_create(
+                        type=day.strip())
+                    self.meeting_types.update({day: mt})
+                else:
+                    mt = self.meeting_types[day]
+
                 meeting.types.add(mt)
 
         return count
