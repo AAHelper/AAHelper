@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>AA San Diego Helper</title>
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.min.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
@@ -12,11 +12,11 @@
             {% block header %}{% include 'header.html' %}{% endblock %}
         </header>
         <div class="row" id="doc-wrapper">
-            <input id="doc-drawer-checkbox" class="drawer persistent" value="on" type="checkbox">
-            <nav class="demo" id="nav-drawer">
+            <input id="doc-drawer-checkbox" class="drawer" value="on" type="checkbox">
+            <nav class="col-md-3 col-lg-2" id="nav-drawer">
                 {% block sidebar %}{% include 'sidebar.html' %}{% endblock %}
             </nav>
-            <main class="col-sm-12 col-md-12 col-lg-12" id="doc-content">
+            <main class="col-sm col-md col-lg" id="doc-content">
                 {% block content %}{% endblock %}
             </main>
         </div>
