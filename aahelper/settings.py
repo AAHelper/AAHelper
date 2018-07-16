@@ -42,9 +42,11 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'aafinder.apps.AafinderConfig',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -136,6 +138,8 @@ STATICFILES_DIRS = [
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
+INTERNAL_IPS = ['127.0.0.1', ]
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
