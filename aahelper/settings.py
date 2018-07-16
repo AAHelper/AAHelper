@@ -27,6 +27,8 @@ SECRET_KEY = "%er@h=zv1pt#(sym=6#7#o#k#b=c0*k^2#+p6e1(_)p=^$s2d%"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+ON_HEROKU = os.environ.get('ON_HEROKU', 'f') in ['t', 'True']
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,11 +44,12 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'aafinder.apps.AafinderConfig',
-    'debug_toolbar',
 ]
+if not ON_HEROKU:
+    INSTALLED_APPS += ['debug_toolbar', ]
 
 MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -56,6 +59,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if not ON_HEROKU:
+    MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware', ] + MIDDLEWARE
 
 ROOT_URLCONF = 'aahelper.urls'
 

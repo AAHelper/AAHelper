@@ -23,7 +23,7 @@ urlpatterns = [
     path('', include('aafinder.urls')),
 ]
 
-if settings.DEBUG:
+if not settings.ON_HEROKU:
     import debug_toolbar
     urlpatterns = [
         path('__debug__/', include(debug_toolbar.urls)),
