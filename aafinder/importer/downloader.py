@@ -14,6 +14,7 @@ def download_and_save_page(page):
     fname = urlparse(page).path.split("/")[-1]
     path = pathlib.Path(os.path.join(get_or_create_downloads_folder(), fname))
     resp = None
+    downloaded_and_saved = False
 
     if not path.exists():
         print(f'Page {page} does not exist, downloading and saving the page.')
@@ -21,10 +22,11 @@ def download_and_save_page(page):
         resp.raise_for_status()
         with path.open(mode="w") as fp:
             fp.write(resp.text)
+        downloaded_and_saved = True
     else:
         print(f'Page {page} already downloaded, delete {path} to re-download.')
 
-    return resp
+    return resp, downloaded_and_saved
 
 
 def get_anchors(content):
@@ -39,9 +41,12 @@ def get_anchors(content):
             print(f'Found anchor to {link}.')
             yield link
 
+
 def download_page_if_any(url):
     download_dir = get_or_create_downloads_folder()
-    resp = download_and_save_page(url)
+    count = 0
+    resp, downloaded_and_saved = download_and_save_page(url)
+    count += downloaded_and_saved
     if not resp:
         path = pathlib.Path(
             os.path.join(download_dir, 'legend.html'))
@@ -49,12 +54,16 @@ def download_page_if_any(url):
             content = fp.read()
 
     for anchor in get_anchors(content):
-        download_and_save_page(anchor)
+        _ , downloaded_and_saved = download_and_save_page(anchor)
+        count += downloaded_and_saved
+    return downloaded_and_saved
 
 def download_all():
     start_page = "http://www.aasandiego.org/legend.html"
     downloads_folder = get_or_create_downloads_folder()
-    resp = download_and_save_page(start_page)
+    count = 0
+    resp, downloaded_and_saved = download_and_save_page(start_page)
+    count += downloaded_and_saved
     if not resp:
         path = pathlib.Path(
             os.path.join(downloads_folder, 'legend.html'))
@@ -64,11 +73,14 @@ def download_all():
         content = resp.content
 
     for anchor in get_anchors(content):
-        download_and_save_page(anchor)
+        resp, downloaded_and_saved = download_and_save_page(anchor)
+        count +=  downloaded_and_saved
     looked_at = []
     for path in pathlib.Path(downloads_folder).iterdir():
         if path not in looked_at:
             if path.name != 'legend.html':
                 content = path.read_text()
             for anchor in get_anchors(content):
-                download_and_save_page(anchor)
+                resp, downloaded_and_saved = download_and_save_page(anchor)
+                count += downloaded_and_saved
+    return downloaded_and_saved
