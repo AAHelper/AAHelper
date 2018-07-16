@@ -1,0 +1,23 @@
+<table class="striped hoverable">
+        <caption>Meetings{% if area and area.id %} in {{area|title}}{% endif %}</caption>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Time</th>
+                {% if not index %}<th>Days</th>{% endif %}
+                <th>Area</th>
+                <th>Codes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for meeting in latest_meeting_list %}
+            <tr>
+                <td data-label="Name"><a href="{{meeting.url}}"><span class="icon-location"></span></a>{{ meeting.name }}</td>
+                <td data-label="Time">{{meeting.time}}</td>
+                {% if not index %}<td data-label="Days">{% for m in meeting.types.all %}{{m.type }}{% if not forloop.last %}, {% endif  %}{% endfor %}</td>{% endif %}
+                <td data-label="Area"><a href="{% url 'aafinder:area_detail' pk=meeting.area_id %}">{{ meeting.area.area }}</a></td>
+                <td data-label="Codes">{% with meeting.codes.all as codes %}{% if codes %}<ul>{% for code in codes %}<li>{{code.description }}</li>{% endfor %}</ul>{% endif %}{% endwith %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
