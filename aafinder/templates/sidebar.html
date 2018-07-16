@@ -2,27 +2,27 @@
 	<label for="doc-drawer-checkbox" class="button drawer-close"></label>
 		<div class="section">
 			<form action="{% url 'aafinder:index' %}" method="post">
-			<fieldset class="responsive-label">
-				<legend class="doc">Refine Search</legend>
-				{% csrf_token %}
-				{% if form.errors %}
-					<ul class="errors">
-						{% for error in form.errors %}
-							<li>{{ error }}</li>
-						{% endfor %}
-					</ul>
-				{% endif %}
-				{% for field in form %}
-					<div class="row responsive-label">
-						<div class="col-sm col-md">
-							<label class="doc" for="{{field.id_for_label}}">{{ field.label }}</label>
+				<fieldset class="responsive-label">
+					<legend class="doc">Refine Search</legend>
+					{% csrf_token %}
+					{% if form.errors %}
+						<ul class="errors">
+							{% for error in form.errors %}
+								<li>{{ error }}</li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+					{% for field in form %}
+						<div class="row responsive-label">
+							<div class="col-sm col-md">
+								<label class="doc" for="{{field.id_for_label}}">{{ field.label }}</label>
+							</div>
+							<div class="col-sm col-md">
+								{{ field }}
+							</div>
 						</div>
-						<div class="col-sm col-md">
-							{{ field }}
-						</div>
-					</div>
-				{% endfor %}
-				<input type="submit" value="Search" />
-			</fieldset>
-		</form>
-	</div>
+					{% endfor %}
+					<input type="submit" value="Search" />
+				</fieldset>
+			</form>
+		</div>
