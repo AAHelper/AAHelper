@@ -12,7 +12,7 @@
         <tbody>
             {% for meeting in latest_meeting_list %}
             <tr>
-                <td data-label="Name"><a href="{{meeting.url}}"><span class="icon-location"></span></a>{{ meeting.name }}</td>
+                <td data-label="Name"><a href="{{meeting.url}}"><span class="icon-location"></span></a>{# <a href="{% url 'aafinder:meeting_detail' pk=meeting.id %}"> #}{{ meeting.name }}{# </a> #}</td>
                 <td data-label="Time">{{meeting.time}}</td>
                 {% if not index %}<td data-label="Days">{% for m in meeting.types.all %}{{m.type }}{% if not forloop.last %}, {% endif  %}{% endfor %}</td>{% endif %}
                 <td data-label="Area"><a href="{% url 'aafinder:area_detail' slug=meeting.area.slug %}">{{ meeting.area.area }}</a></td>

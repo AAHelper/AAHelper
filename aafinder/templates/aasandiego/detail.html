@@ -1,16 +1,43 @@
-<html>
-<head>
-	<title>{{object.name}}</title>
-</head>
-<body>
-	<table>
-		<tr><td>Name:</td><td>{{object.name}}</td></tr>
-		<tr><td>location:</td><td>{{object.location.address_string}}</td></tr>
-		<tr><td>time:</td><td>{{object.time}}</td></tr>
-		<tr><td>url:</td><td>{{object.url}}</td></tr>
-		<tr><td>area:</td><td>{{object.area}}</td></tr>
-		<tr><td>codes:</td><td>{% for o in object.codes.all %}{{o.description}}{% endfor %}</td></tr>
-		<tr><td>types:</td><td>{% for o in object.types.all %}{{o.type}}{% endfor %}</td></tr>
+{% extends 'base.html' %}
+
+{% block title %} - {{object.name}}{% endblock title %}
+{% block content %}
+    <h1>Meeting{% if area and area.id %} in {{area|title}}{% endif %}</h1>
+	<table class="striped">
+		<thead>
+			<tr>
+				<th colspan="2" style="text-align: center;">Meeting Details</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Name:</td>
+				<td>{{object.name}}</td>
+			</tr>
+			<tr>
+				<td>location:</td>
+				<td>{{object.location.address_string}}</td>
+			</tr>
+			<tr>
+				<td>Time:</td>
+				<td>{{object.time}}</td>
+			</tr>
+			<tr>
+				<td>Map:</td>
+				<td><a href="{{object.url}}">{{object.url}}</a></td>
+			</tr>
+			<tr>
+				<td>Area:</td>
+				<td>{{object.area}}</td>
+			</tr>
+			<tr>
+				<td>Meeing Codes:</td>
+				<td>{% for o in object.codes.all %}{{o.description}}{% endfor %}</td>
+			</tr>
+			<tr>
+				<td>Days:</td>
+				<td>{% for o in object.types.all %}{{o.type}}{% endfor %}</td>
+			</tr>
+		</tbody>
 	</table>
-</body>
-</html>
+{% endblock content %}

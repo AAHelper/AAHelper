@@ -90,6 +90,20 @@ class InitialFormMixin:
         self.day_word = day_word
         self.area = area
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if not hasattr(self, 'day_word'):
+            self.form = self.get_form()
+            self.set_filter_values(self.form)
+
+        context['today'] = self.day_word
+        context['now'] = self.start_time
+        context['hours_from'] = self.end_time
+        context['area'] = self.area
+
+        context['form'] = self.form
+        return context
+
 
 class IndexView(InitialFormMixin, generic.ListView):
     template_name = 'aasandiego/index.html'
@@ -119,36 +133,11 @@ class IndexView(InitialFormMixin, generic.ListView):
 
         return qs
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context['today'] = self.day_word
-        context['now'] = self.start_time
-        context['hours_from'] = self.end_time
-        context['area'] = self.area
-
-        context['form'] = self.form
-        return context
-
-
-class DetailView(generic.DetailView):
+class DetailView(InitialFormMixin, generic.DetailView):
     model = Meeting
     template_name = 'aasandiego/detail.html'
+
 
 class AreaDetailView(InitialFormMixin, generic.DetailView):
     model = MeetingArea
     template_name = 'aasandiego/area_detail.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        form = self.get_form()
-
-        self.set_filter_values(form)
-
-        context['today'] = self.day_word
-        context['now'] = self.start_time
-        context['hours_from'] = self.end_time
-        context['area'] = self.area
-
-        context['form'] = form
-        return context

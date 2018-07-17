@@ -4,6 +4,7 @@ from aafinder.models import Location, MeetingCode, MeetingType, Meeting, Meeting
 class MeetingAdmin(admin.ModelAdmin):
     list_display = ('name', 'time', 'area',)
     list_filter = ('types', 'time')
+    search_fields = ('name', )
 
 admin.site.register(Location)
 admin.site.register(MeetingCode)
