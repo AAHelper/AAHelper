@@ -147,5 +147,8 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 INTERNAL_IPS = ['127.0.0.1', ]
 
+if ON_HEROKU:
+    SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
 # Activate Django-Heroku.
 django_heroku.settings(locals())
