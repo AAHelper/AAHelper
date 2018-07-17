@@ -3,9 +3,10 @@ from django.views import generic
 # from django.http import Http404
 # from django.utils.translation import gettext as _
 
-from .models import Meeting, MeetingArea
-from .forms import MeetingSearchForm, MeetingForm, get_meeting_area_choices
-from .utils import get_now_time, get_now_date, get_now_and_offset, now
+from .models import Meeting, MeetingArea, MeetingType
+from .forms import MeetingSearchForm
+from .utils import now
+
 
 class InitialFormMixin:
     form_class = MeetingSearchForm
@@ -18,7 +19,8 @@ class InitialFormMixin:
             # 'date': get_now_date(),
             # 'start_time': get_now_time(),
             'area': 'all',
-            'date_and_time': now,
+            'time': now,
+            'day': self.get_current_day_meeting_type_pk,
             'hours_from_start': 3,
         }
         return initial_data
@@ -51,28 +53,47 @@ class InitialFormMixin:
             })
         return kwargs
 
-    def get_filter_values(self, form):
-        now, hours_from_now = get_now_and_offset()
-        day_word = now.strftime("%A")
-        area = "All"
+    def get_current_day_word(self):
+        return now().strftime("%A")
 
+    def get_current_day_meeting_type_pk(self):
+        return MeetingType.objects.only("pk").get(
+            type=self.get_current_day_word()).pk
+
+    def set_filter_values(self, form):
         if form.is_valid():
-            now = form.cleaned_data['date_and_time']
-            hours_from_now = now + datetime.timedelta(hours=form.cleaned_data['hours_from_start'])
-            day_word = now.strftime("%A")
+            start_time = form.cleaned_data['time']
+            today = datetime.datetime.combine(now().today(), start_time)
+            end_time = today + datetime.timedelta(
+                hours=form.cleaned_data['hours_from_start'])
+            day_word = MeetingType.objects.get(
+                pk=form.cleaned_data['day']).type
             area = form.cleaned_data['area']
+        else:
+            start_time = now().time()
+            today = now().today()
+            end_time = datetime.datetime.combine(today, start_time)
+            end_time = end_time + datetime.timedelta(hours=3)
+            day_word = MeetingType.objects.get(type=start_time.strftime("%A"))
+            area = "All"
 
         if area == 'All' or not area.isnumeric():
             area = MeetingArea(area=area)
         else:
             area = MeetingArea.objects.get(pk=area)
 
-        return now, hours_from_now, day_word, area
+        if end_time.day > today.day or end_time.month > today.month:
+            end_time = end_time.replace(hour=23, minute=59)
+
+        self.start_time = start_time
+        self.end_time = end_time
+        self.day_word = day_word
+        self.area = area
+
 
 class IndexView(InitialFormMixin, generic.ListView):
     template_name = 'aasandiego/index.html'
     context_object_name = 'latest_meeting_list'
-    
 
     def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
@@ -85,32 +106,28 @@ class IndexView(InitialFormMixin, generic.ListView):
 
     def get_queryset(self):
         """Return the last five published questions."""
-        form = self.get_form()
-        now, hours_from_now, day_word, area = self.get_filter_values(form)
-
+        self.form = self.get_form()
+        self.set_filter_values(self.form)
         qs = Meeting.objects.filter(
-            types__type=day_word,
-            time__gte=now.time(),
-            time__lte=hours_from_now,
+            types__type=self.day_word,
+            time__gte=self.start_time,
+            time__lte=self.end_time,
             ).select_related('area').order_by('time')
 
-        if area.id:
-            qs = qs.filter(area=area)
+        if self.area.id:
+            qs = qs.filter(area=self.area)
 
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        form = self.get_form()
 
-        now, hours_from_now, day_word, area = self.get_filter_values(form)
+        context['today'] = self.day_word
+        context['now'] = self.start_time
+        context['hours_from'] = self.end_time
+        context['area'] = self.area
 
-        context['today'] = day_word
-        context['now'] = now
-        context['hours_from'] = hours_from_now
-        context['area'] = area
-
-        context['form'] = form
+        context['form'] = self.form
         return context
 
 
@@ -126,23 +143,12 @@ class AreaDetailView(InitialFormMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         form = self.get_form()
 
-        now, hours_from_now, day_word, area = self.get_filter_values(form)
+        self.set_filter_values(form)
 
-        context['today'] = day_word
-        context['now'] = now
-        context['hours_from'] = hours_from_now
-        context['area'] = area
+        context['today'] = self.day_word
+        context['now'] = self.start_time
+        context['hours_from'] = self.end_time
+        context['area'] = self.area
 
         context['form'] = form
         return context
-
-
-# class MeetingFilter(IndexView, edit.FormView):
-#     template_name = 'contact.html'
-#     form_class = MeetingSearchForm
-
-#     def form_valid(self, form):
-#         # This method is called when valid form data has been POSTed.
-#         # It should return an HttpResponse.
-#         qs = form.get_queryset()
-#         return super().form_valid(form)
