@@ -20,7 +20,7 @@ class InitialFormMixin:
             # 'start_time': get_now_time(),
             'area': 'all',
             'time': now,
-            'day': self.get_current_day_meeting_type_pk,
+            'day': self.get_current_day_meeting_type_slug,
             'hours_from_start': 3,
         }
         return initial_data
@@ -56,9 +56,9 @@ class InitialFormMixin:
     def get_current_day_word(self):
         return now().strftime("%A")
 
-    def get_current_day_meeting_type_pk(self):
-        return MeetingType.objects.only("pk").get(
-            type=self.get_current_day_word()).pk
+    def get_current_day_meeting_type_slug(self):
+        return MeetingType.objects.only("slug").get(
+            type=self.get_current_day_word()).slug
 
     def set_filter_values(self, form):
         if form.is_valid():
@@ -67,7 +67,7 @@ class InitialFormMixin:
             end_time = today + datetime.timedelta(
                 hours=form.cleaned_data['hours_from_start'])
             day_word = MeetingType.objects.get(
-                pk=form.cleaned_data['day']).type
+                slug=form.cleaned_data['day']).type
             area = form.cleaned_data['area']
         else:
             start_time = now().time()
@@ -80,7 +80,7 @@ class InitialFormMixin:
         if area == 'All' or not area.isnumeric():
             area = MeetingArea(area=area)
         else:
-            area = MeetingArea.objects.get(pk=area)
+            area = MeetingArea.objects.get(slug=area)
 
         if end_time.day > today.day or end_time.month > today.month:
             end_time = end_time.replace(hour=23, minute=59)

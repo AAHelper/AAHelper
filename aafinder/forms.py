@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.forms.utils import from_current_timezone, to_current_timezone
 from aafinder.models import Meeting, MeetingArea, MeetingType
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import slugify
 from aafinder.utils import now
 
 AREAS = None
@@ -26,7 +27,7 @@ def get_meeting_area_choices():
     global AREAS
     if AREAS is None:
         AREAS = [('All', 'All'), ] + [(
-            c.id, c.area) for c in MeetingArea.objects.all().order_by("area")]
+            c.slug, c.area) for c in MeetingArea.objects.all().order_by("area")]
     # areas = areas + [('All', 'All'), ]
 
     return AREAS
@@ -47,7 +48,7 @@ def get_types_choices():
         weekday = tmp_date.strftime('%A')
         MEETING_TYPES.append(
             (
-                MeetingType.objects.only('pk').get(type=weekday).pk,
+                slugify(weekday),
                 weekday
             )
         )

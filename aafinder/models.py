@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 
 
 class Location(models.Model):
@@ -15,6 +16,12 @@ class Location(models.Model):
 class MeetingCode(models.Model):
     code = models.CharField(max_length=5)
     description = models.CharField(max_length=100)
+    # slug = models.SlugField()
+
+    # def save(self, *args, **kwargs):
+    #     if not self.slug:
+    #         self.slug = slugify(self.code)
+    #     super().save(*args, **kwargs)
 
     def __str__(self):
         return self.description
@@ -22,7 +29,12 @@ class MeetingCode(models.Model):
 
 class MeetingType(models.Model):
     type = models.CharField(max_length=50)
-    is_day_of_week = models.BooleanField(default=False)
+    slug = models.SlugField()
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.type)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.type
@@ -30,6 +42,12 @@ class MeetingType(models.Model):
 
 class MeetingArea(models.Model):
     area = models.CharField(max_length=100)
+    slug = models.SlugField()
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.area)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.area

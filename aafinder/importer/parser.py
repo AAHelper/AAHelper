@@ -153,6 +153,8 @@ class Parser:
     @property
     def area(self):
         area = get_flattened_text(self.area_td(self.tds)).strip()
+        area = ' '.join(area.split())
+
         if area.startswith("* "):
             import ipdb; ipdb.set_trace()
         return area
