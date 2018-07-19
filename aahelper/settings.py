@@ -17,6 +17,8 @@ import django_heroku
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
+ON_HEROKU = os.environ.get('ON_HEROKU', 'f') in ['t', 'True']
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -25,9 +27,10 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = "%er@h=zv1pt#(sym=6#7#o#k#b=c0*k^2#+p6e1(_)p=^$s2d%"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ON_HEROKU = os.environ.get('ON_HEROKU', 'f') in ['t', 'True']
+if ON_HEROKU:
+    DEBUG = False
+else:
+    DEBUG = True
 
 # Application definition
 
@@ -49,7 +52,6 @@ if not ON_HEROKU:
     INSTALLED_APPS += ['debug_toolbar', ]
 
 MIDDLEWARE = [
-    
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
