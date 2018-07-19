@@ -70,11 +70,11 @@ class InitialFormMixin:
                 slug=form.cleaned_data['day']).type
             area = form.cleaned_data['area']
         else:
-            start_time = now().time()
+            start_time = now()
             today = now().today()
-            end_time = datetime.datetime.combine(today, start_time)
+            end_time = datetime.datetime.combine(today, start_time.time())
             end_time = end_time + datetime.timedelta(hours=3)
-            day_word = MeetingType.objects.get(type=start_time.strftime("%A"))
+            day_word = MeetingType.objects.get(type=self.get_current_day_word())
             area = "All"
 
         if area == 'All' or not area.isnumeric():
@@ -88,6 +88,7 @@ class InitialFormMixin:
         self.start_time = start_time
         self.end_time = end_time
         self.day_word = day_word
+        # import pdb; pdb.set_trace()
         self.area = area
 
     def get_context_data(self, **kwargs):
@@ -95,7 +96,8 @@ class InitialFormMixin:
         if not hasattr(self, 'day_word'):
             self.form = self.get_form()
             self.set_filter_values(self.form)
-
+        print(self.day_word)
+        import pdb; pdb.set_trace()
         context['today'] = self.day_word
         context['now'] = self.start_time
         context['hours_from'] = self.end_time

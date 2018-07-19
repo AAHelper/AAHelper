@@ -1,23 +1,46 @@
 {% load static %}
 <html>
 <head>
-    <title>AA San Diego Helper{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'styles.min.css' %}">
+    <title>AA San Diego Helper</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <div id="root">
+    <div id="root" class="container wrapper">
         <header class="row">
-            {% block header %}{% include 'header.html' %}{% endblock %}
+            <h1><a href="{% url 'aafinder:index' %}" class="button col-sm col-md col-lg">AA San Diego Helper</a></h1>
         </header>
+        <div class="col-sm col-md col-lg">
+            <form action="{% url 'aafinder:index' %}" method="post">
+				<fieldset>
+					<legend class="doc">Refine Search</legend>
+					{% csrf_token %}
+                    <div class="row">
+
+						{% if form.errors %}
+							<ul class="errors">
+								{% for error in form.errors %}
+									<li>{{ error }}</li>
+								{% endfor %}
+							</ul>
+						{% endif %}
+						{% for field in form %}
+						<div class="col-lg-2">
+							<label class="doc" for="{{field.id_for_label}}"><strong>{{ field.label }}</strong></label><br />
+								{{ field }}
+							</div>
+						{% endfor %}
+						<div class="col-lg-2">
+							<input type="submit" value="Search" />
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
         <div class="row" id="doc-wrapper">
-            <input id="doc-drawer-checkbox" class="drawer" value="on" type="checkbox">
-            <nav class="col-md-3 col-lg-2" id="nav-drawer">
-                {% block sidebar %}{% include 'sidebar.html' %}{% endblock %}
-            </nav>
             <main class="col-sm col-md col-lg" id="doc-content">
                 {% block content %}{% endblock %}
             </main>
-        </div>
+		</div>
     </div>
 </body>
