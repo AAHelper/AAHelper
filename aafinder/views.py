@@ -88,7 +88,6 @@ class InitialFormMixin:
         self.start_time = start_time
         self.end_time = end_time
         self.day_word = day_word
-        # import pdb; pdb.set_trace()
         self.area = area
 
     def get_context_data(self, **kwargs):
@@ -96,8 +95,6 @@ class InitialFormMixin:
         if not hasattr(self, 'day_word'):
             self.form = self.get_form()
             self.set_filter_values(self.form)
-        print(self.day_word)
-        import pdb; pdb.set_trace()
         context['today'] = self.day_word
         context['now'] = self.start_time
         context['hours_from'] = self.end_time
