@@ -7,16 +7,18 @@
                 {% if not index %}<th>Days</th>{% endif %}
                 <th>Area</th>
                 <th>Codes</th>
+                <th>Notes</th>
             </tr>
         </thead>
         <tbody>
             {% for meeting in latest_meeting_list %}
             <tr>
-                <td data-label="Name"><a href="{{meeting.url}}"><span class="icon-location"></span></a>{# <a href="{% url 'aafinder:meeting_detail' pk=meeting.id %}"> #}{{ meeting.name }}{# </a> #}</td>
+                <td data-label="Name" class="tooltip bottom" aria-label="{{meeting.notes}}"><a href="{{meeting.url}}"><span class="icon-location"></span></a>{# <a href="{% url 'aafinder:meeting_detail' pk=meeting.id %}"> #}{{ meeting.name }}{# </a> #}</td>
                 <td data-label="Time">{{meeting.time}}</td>
                 {% if not index %}<td data-label="Days">{% for m in meeting.types.all %}{{m.type }}{% if not forloop.last %}, {% endif  %}{% endfor %}</td>{% endif %}
                 <td data-label="Area"><a href="{% url 'aafinder:area_detail' slug=meeting.area.slug %}">{{ meeting.area.area }}</a></td>
                 <td data-label="Codes">{% with meeting.codes.all as codes %}{% if codes %}<ul>{% for code in codes %}<li>{{code.description }}</li>{% endfor %}</ul>{% endif %}{% endwith %}</td>
+                <td>{{meeting.notes}}</td>
             </tr>
             {% endfor %}
         </tbody>

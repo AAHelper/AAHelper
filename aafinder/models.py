@@ -64,6 +64,7 @@ class Meeting(models.Model):
     types = models.ManyToManyField(MeetingType)
     row_src = models.TextField(blank=True)
     orig_filename = models.TextField(blank=True)
+    notes = models.TextField(blank=True)
 
     def __str__(self):
         return self.name

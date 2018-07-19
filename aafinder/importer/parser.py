@@ -207,6 +207,37 @@ class Parser:
 
         return [self.name]
 
+    @property
+    def notes(self):
+        tr = self.tr
+        # print(self.meeting_name, self.location_type)
+        # print(html.tostring(tr).strip())
+
+        notes = self.get_flattened_text(tr)
+        if self.time_td(tr).text:
+            notes = notes.replace(self.time_td(tr).text, '')
+        if self.meeting_name_td(tr).text:
+            notes = notes.replace(self.meeting_name_td(tr).text, '').strip()
+        if self.location_td(tr).text:
+            notes = notes.replace(self.location_td(tr).text, '').strip()
+        if self.anchor_td(tr).text:
+            try:
+                notes = notes.replace(
+                    self.anchor_td(tr).xpath("./a")[0].text.strip(), '')
+            except Exception as ex:
+                del ex
+                pass
+            notes = notes.replace(self.anchor_td(tr).text, '').strip()
+        if self.codes_td(tr).text:
+            notes = notes.replace(self.codes_td(tr).text, '').strip()
+        if self.area_td(tr).text:
+            notes = notes.replace(self.area_td(tr).text, '').strip()
+        if self.days_td(tr).text:
+            notes = notes.replace(self.days_td(tr).text, '').strip()
+        notes = " ".join(notes.replace("\n", ' ').split())
+        # print(f"Note: {notes}.\n")
+        return notes
+
     def parse_all(self):
         count = 0
         for path in Path(self.downloads_dir).iterdir():
@@ -251,9 +282,25 @@ class Parser:
 
         return self._parse(rows)
 
+    def get_flattened_text(self, el):
+        """
+        Returns the text contents of an element.
+        """
+        els = list(el.iter())
+        out = []
+        for e in els:
+            if e.text is not None:
+                out.append(e.text)
+            if e.tail is not None:
+                out.append(e.tail)
+
+        return ''.join(out)
+
     def _parse(self, rows):
         locations = []
         for i, tr in enumerate(rows[1:]):
+
+            self.tr = tr
 
             self.tds = tr.xpath("./td")
             if self.check_and_set_day():
@@ -264,6 +311,7 @@ class Parser:
                 "name": self.meeting_name,
                 "street_address": self.street_address,
                 "location_type": self.location_type,
+                "notes": self.notes,
                 "codes": self.codes,
                 "area": self.area,
                 "url": self.url,
@@ -295,7 +343,8 @@ class Parser:
             location, created = Location.objects.get_or_create(
                 address_string=item['street_address'])
             if item['area'] not in self.meeting_areas:
-                area, created = MeetingArea.objects.get_or_create(area=item['area'])
+                area, created = MeetingArea.objects.get_or_create(
+                    area=item['area'])
                 self.meeting_areas.update({item['area']: area})
             else:
                 area = self.meeting_areas[item['area']]
@@ -306,7 +355,8 @@ class Parser:
                     'url': item['url'],
                     'area': area,
                     'row_src': item['row'],
-                    'orig_filename': item['orig_file']
+                    'orig_filename': item['orig_file'],
+                    'notes': item['notes']
                 }
             )
             if created:
