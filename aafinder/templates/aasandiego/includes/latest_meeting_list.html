@@ -18,7 +18,7 @@
                 <td data-label="Time">{{meeting.time}}</td>
                 {% if not index %}<td data-label="Days">{% for m in meeting.types.all %}{{m.type }}{% if not forloop.last %}, {% endif  %}{% endfor %}</td>{% endif %}
                 <td data-label="Area"><a href="{% url 'aafinder:area_detail' slug=meeting.area.slug %}">{{ meeting.area.area }}</a></td>
-                <td data-label="Codes">{% if not code %}{% with meeting.codes.all as codes %}{% if codes %}<ul>{% for code in codes %}<li><a href="{% url 'aafinder:meetings_by_code' pk=code.pk %}">{{code.description }}</a></li>{% endfor %}</ul>{% endif %}{% endwith %}{% else %}<ul><li>{{ code }}</li></ul>{% endif %}</td>
+                <td data-label="Codes">{% with meeting.codes.all as codes %}{% if codes %}<ul>{% for code in codes %}<li>{{code.description }}</li>{% endfor %}</ul>{% endif %}{% endwith %}</td>
                 <td data-label="Notes">{{meeting.notes}}</td>
                 {% if not location %}<td data-label="Location"><a href="{% url 'aafinder:meetings_by_location' pk=meeting.location_id %}">Other meetings at this location.</a></td>{% endif %}
             </tr>
