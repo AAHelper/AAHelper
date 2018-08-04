@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block content %}
+{% with latest_meeting_list=meetings area=object location=1%}
+{% include 'aasandiego/includes/latest_meeting_list.html' %}
+{% endwith %}
+{% endblock %}

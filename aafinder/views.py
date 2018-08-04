@@ -1,9 +1,10 @@
 import datetime
 from django.views import generic
+from django.shortcuts import redirect
 # from django.http import Http404
 # from django.utils.translation import gettext as _
 
-from .models import Meeting, MeetingArea, MeetingType
+from .models import Meeting, MeetingArea, MeetingType, Location, MeetingCode
 from .forms import MeetingSearchForm
 from .utils import now
 
@@ -74,7 +75,8 @@ class InitialFormMixin:
             today = now().today()
             end_time = datetime.datetime.combine(today, start_time.time())
             end_time = end_time + datetime.timedelta(hours=3)
-            day_word = MeetingType.objects.get(type=self.get_current_day_word())
+            day_word = MeetingType.objects.get(
+                type=self.get_current_day_word())
             area = "All"
 
         if area == 'All' or not area.isnumeric():
@@ -132,6 +134,7 @@ class IndexView(InitialFormMixin, generic.ListView):
 
         return qs
 
+
 class DetailView(InitialFormMixin, generic.DetailView):
     model = Meeting
     template_name = 'aasandiego/detail.html'
@@ -140,3 +143,80 @@ class DetailView(InitialFormMixin, generic.DetailView):
 class AreaDetailView(InitialFormMixin, generic.DetailView):
     model = MeetingArea
     template_name = 'aasandiego/area_detail.html'
+
+
+class LocationDetailView(InitialFormMixin, generic.DetailView):
+    model = Location
+    template_name = 'aasandiego/location_detail.html'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        self.form = self.get_form()
+        self.set_filter_values(self.form)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['meetings'] = context['object'].meeting_set.all().select_related('area').order_by('time', )
+        return context
+
+class CodeDetailView(InitialFormMixin, generic.DetailView):
+    model = MeetingCode
+    template_name = 'aasandiego/meeting_code_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['meetings'] = context['object'].meeting_set.all().select_related('area').order_by('time', )
+        return context
+
+# class MeetingSearch(IndexView):
+#     # model = Meeting
+#     # template_name = 'aasandiego/detail.html'
+
+#     # def get_form_kwargs(self):
+#     #     """Return the keyword arguments for instantiating the form."""
+#     #     kwargs = {
+#     #         'initial': self.get_initial(),
+#     #         'prefix': self.get_prefix(),
+#     #     }
+
+#     #     # if self.request.method in ('POST', 'PUT'):
+#     #     kwargs.update({'data': self.kwargs})
+#     #     # kwargs.update({
+#     #     #     'data': self.request.POST,
+#     #     #     'files': self.request.FILES,
+#     #     # })
+#     #     return kwargs
+
+#     def get(self, request, *args, **kwargs):
+#         form = self.get_form()
+#         if form.is_valid():
+#             return redirect(
+#                 "aafinder:meeting_redirect",
+#                 day=form.cleaned_data['day'],
+#                 area=form.cleaned_data['area'],
+#                 time=form.cleaned_data['time'].strftime("%H:%M"),
+#                 hours_from_start=form.cleaned_data['hours_from_start']
+#             )
+
+#         return super().get(request, *args, **kwargs)
+
+
+# class MeetingView(IndexView):
+#     # model = Meeting
+#     # template_name = 'aasandiego/detail.html'
+
+#     def get_form_kwargs(self):
+#         """Return the keyword arguments for instantiating the form."""
+#         kwargs = {
+#             'initial': self.get_initial(),
+#             'prefix': self.get_prefix(),
+#         }
+
+#         # if self.request.method in ('POST', 'PUT'):
+#         kwargs.update({'data': self.kwargs})
+#         # kwargs.update({
+#         #     'data': self.request.POST,
+#         #     'files': self.request.FILES,
+#         # })
+#         return kwargs
