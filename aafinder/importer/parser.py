@@ -241,6 +241,8 @@ class Parser:
     def parse_all(self):
         count = 0
         for path in Path(self.downloads_dir).iterdir():
+            if path.is_dir():
+                continue
             self.day = None
             if path.name != 'legend.html':
                 self.name = path.name.split(".")[0]

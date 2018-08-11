@@ -13,12 +13,13 @@ def reset():
 class Command(BaseCommand):
     help = 'Imports all the downloaded aasandiego html files'
 
-    # def add_arguments(self, parser):
-    #     parser.add_argument('poll_id', nargs='+', type=int)
+    def add_arguments(self, parser):
+        parser.add_argument('--force_save', dest='force_save', action='store_true')
 
     def handle(self, *args, **options):
+        force_save = options['force_save']
         try:
-            count = download_all()
+            count = download_all(force_save=force_save)
         except Exception as ex:
             import traceback; traceback.print_exc()
             raise CommandError("Could not import stuff. %s" % str(ex))
