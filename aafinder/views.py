@@ -79,7 +79,7 @@ class InitialFormMixin:
                 type=self.get_current_day_word())
             area = "All"
 
-        if area == 'All' or not area.isnumeric():
+        if area.lower() == 'all':
             area = MeetingArea(area=area)
         else:
             area = MeetingArea.objects.get(slug=area)

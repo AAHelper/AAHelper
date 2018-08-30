@@ -26,7 +26,7 @@ class MeetingForm(forms.ModelForm):
 def get_meeting_area_choices():
     global AREAS
     if AREAS is None:
-        AREAS = [('All', 'All'), ] + [(
+        AREAS = [('all', 'All'), ] + [(
             c.slug, c.area) for c in MeetingArea.objects.all().order_by("area")]
     # areas = areas + [('All', 'All'), ]
 
