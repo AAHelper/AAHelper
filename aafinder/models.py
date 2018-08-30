@@ -60,11 +60,27 @@ class Meeting(models.Model):
     url = models.URLField(max_length=500)
     area = models.ForeignKey(
         MeetingArea, on_delete=models.CASCADE, blank=True, null=True)
-    codes = models.ManyToManyField(MeetingCode)
-    types = models.ManyToManyField(MeetingType)
+    codes = models.ManyToManyField(MeetingCode, through='CodeMap')
+    types = models.ManyToManyField(MeetingType, through='TypeMap')
     row_src = models.TextField(blank=True)
     orig_filename = models.TextField(blank=True)
     notes = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
+
+
+class CodeMap(models.Model):
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    meetingcode = models.ForeignKey(MeetingCode, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'aafinder_meeting_codes'
+
+
+class TypeMap(models.Model):
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    meetingtype = models.ForeignKey(MeetingType, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'aafinder_meeting_types'

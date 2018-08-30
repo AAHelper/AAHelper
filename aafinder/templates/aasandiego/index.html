@@ -12,6 +12,9 @@
         {% include 'aasandiego/includes/latest_meeting_list.html' with index="t"%}
     {% else %}
         <p>No meetings are available.</p>
+        {% if area.id %}
+        <p><a href="{% url 'aafinder:area_detail' slug=area.slug %}">Click to See all meetings in {{area.area}}</a></p>
+        {% endif %}
     {% endif %}
 
 {% endblock %}
