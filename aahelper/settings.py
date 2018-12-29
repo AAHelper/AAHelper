@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.forms',
+    'django.contrib.gis',
     # Disable Django's own staticfiles handling in favour of WhiteNoise, for
     # greater consistency between gunicorn and `./manage.py runserver`. See:
     # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
@@ -147,10 +148,11 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
-INTERNAL_IPS = ['127.0.0.1', ]
+INTERNAL_IPS = ['127.0.0.1', '172.23.0.1']
 
 if ON_HEROKU:
     SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
