@@ -14,6 +14,7 @@ requests = {version = "*", extras = ["security"]}
 lxml = "*"
 "bs4" = "*"
 dj-database-url = "*"
+pip = "==18.0"
 
 [dev-packages]
 ipython = "*"
