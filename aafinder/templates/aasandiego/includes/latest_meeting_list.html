@@ -1,3 +1,4 @@
+{% load aafinder %}
 <table class="striped hoverable">
         <caption>Meetings{% if area and area.id %} for {{area|title}}{% endif %}</caption>
         <thead>
@@ -25,3 +26,4 @@
             {% endfor %}
         </tbody>
     </table>
+    {% render_map_js %}

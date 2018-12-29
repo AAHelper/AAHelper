@@ -3,6 +3,13 @@
 <head>
 	<title>AA San Diego Helper</title>
 	<link rel="stylesheet" href="{% static 'styles.min.css' %}">
+<style>
+       /* Set the size of the div element that contains the map */
+      #map {
+        height: 50%;  /* The height is 400 pixels */
+        width: 100%;  /* The width is the width of the web page */
+       }
+    </style>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
@@ -11,7 +18,7 @@
 			<h2 class="button col-sm col-md col-lg"><a href="{% url 'aafinder:index' %}" class="button">AA San Diego Helper</a></h2>
 			{# <label for="drawer-control" class="drawer-close"></label> #}
 		</header>
-
+	
 		{# <input type="checkbox" id="drawer-control" class="drawer"> #}
 		<div class="col-sm col-md col-lg">
 			<div class="collapse">
@@ -45,9 +52,16 @@
 				</div>
 			</div>
 		</div>
-
 		<div class="row" id="doc-wrapper">
 			<main class="col-sm col-md col-lg" id="doc-content">
+				<div>
+					<div class="row">
+						<div class="col-lg-12">
+							<h1>Whee!</h1>
+							<div id="map"></div>
+						</div>
+					</div>
+				</div>
 				{% block content %}{% endblock %}
 			</main>
 		</div>

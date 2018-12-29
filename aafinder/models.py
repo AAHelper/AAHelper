@@ -1,4 +1,7 @@
+import requests
 from django.db import models
+from django.contrib.gis.db import models
+from django.contrib.gis.geos import Point
 from django.utils.text import slugify
 
 
@@ -8,6 +11,27 @@ class Location(models.Model):
     state = models.CharField(max_length=2)
     zip_code = models.CharField(max_length=5)
     address_string = models.CharField(max_length=500)
+    location = models.PointField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.location is not None:
+            params={
+                "address": self.address_string,
+                "key":"AIzaSyCRB2jA_b4InjlQtslR5g5NO9n8dUTdJ0Q"
+            }
+            resp = requests.get("https://maps.googleapis.com/maps/api/geocode/json", params=params)
+            if resp.ok:
+                try:
+                    j = resp.json()
+                    loc = j['results'][0]['geometry']['location']
+                    print(f'Address: {self.address_string}\tLocation: {loc}')
+                    y = loc['lat']
+                    x = loc['lng']
+                    p = Point(x=x, y=y)
+                    self.location = p
+                except:
+                    pass
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.address_string
@@ -60,8 +84,8 @@ class Meeting(models.Model):
     url = models.URLField(max_length=500)
     area = models.ForeignKey(
         MeetingArea, on_delete=models.CASCADE, blank=True, null=True)
-    codes = models.ManyToManyField(MeetingCode, through='CodeMap')
-    types = models.ManyToManyField(MeetingType, through='TypeMap')
+    codes = models.ManyToManyField(MeetingCode) #, through='CodeMap')
+    types = models.ManyToManyField(MeetingType) #, through='TypeMap')
     row_src = models.TextField(blank=True)
     orig_filename = models.TextField(blank=True)
     notes = models.TextField(blank=True)
@@ -70,17 +94,17 @@ class Meeting(models.Model):
         return self.name
 
 
-class CodeMap(models.Model):
-    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
-    meetingcode = models.ForeignKey(MeetingCode, on_delete=models.CASCADE)
+#class CodeMap(models.Model):
+#    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+#    meetingcode = models.ForeignKey(MeetingCode, on_delete=models.CASCADE)
+#
+#    class Meta:
+#        db_table = 'aafinder_meeting_codes'
 
-    class Meta:
-        db_table = 'aafinder_meeting_codes'
 
-
-class TypeMap(models.Model):
-    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
-    meetingtype = models.ForeignKey(MeetingType, on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = 'aafinder_meeting_types'
+#class TypeMap(models.Model):
+#    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+#    meetingtype = models.ForeignKey(MeetingType, on_delete=models.CASCADE)
+#
+#    class Meta:
+#        db_table = 'aafinder_meeting_types'

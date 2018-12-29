@@ -105,7 +105,6 @@ class InitialFormMixin:
         context['form'] = self.form
         return context
 
-
 class IndexView(InitialFormMixin, generic.ListView):
     template_name = 'aasandiego/index.html'
     context_object_name = 'latest_meeting_list'
