@@ -12,8 +12,9 @@ django-heroku = "*"
 gunicorn = "*"
 requests = {version = "*", extras = ["security"]}
 lxml = "*"
+"bs4" = "*"
+dj-database-url = "*"
 
 [dev-packages]
 ipython = "*"
-ipdb = "*"
 django-debug-toolbar = "*"
