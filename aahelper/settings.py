@@ -153,6 +153,7 @@ INTERNAL_IPS = ['127.0.0.1', '172.23.0.1']
 if ON_HEROKU:
     SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
+
 # Activate Django-Heroku.
 django_heroku.settings(locals())
 GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
