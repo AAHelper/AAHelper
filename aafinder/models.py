@@ -14,7 +14,7 @@ class Location(models.Model):
     location = models.PointField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        if self.location is not None:
+        if self.location is None:
             params={
                 "address": self.address_string,
                 "key":"AIzaSyCRB2jA_b4InjlQtslR5g5NO9n8dUTdJ0Q"
