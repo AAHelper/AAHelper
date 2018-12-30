@@ -156,7 +156,7 @@ if ON_HEROKU:
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
-DATABASES['default']['engine']='django.contrib.gis.db.backends.postgis'
+DATABASES['default']['ENGINE']='django.contrib.gis.db.backends.postgis'
 print(f"Database: {DATABASES}")
 print(dj_database_url.config(conn_max_age=500, ssl_require=True, engine='django.contrib.gis.db.backends.postgis'))
 GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
