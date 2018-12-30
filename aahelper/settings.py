@@ -123,7 +123,7 @@ USE_L10N = True
 USE_TZ = False
 
 # Change 'default' database configuration with $DATABASE_URL.
-# DATABASES['default'].update(dj_database_url.config(conn_max_age=500, ssl_require=True))
+DATABASES['default'].update(dj_database_url.config(conn_max_age=500, ssl_require=True))
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -155,7 +155,9 @@ if ON_HEROKU:
 
 
 # Activate Django-Heroku.
-DATABASES['default'] =  dj_database_url.parse(os.getenv('DATABASE_URL'),'django.contrib.gis.db.backends.postgis')
+# DATABASES['default'] =  dj_database_url.parse(os.getenv('DATABASE_URL'),'django.contrib.gis.db.backends.postgis')
+DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+print(DATABASES)
 django_heroku.settings(locals())
 GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
 GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
