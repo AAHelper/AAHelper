@@ -23,7 +23,7 @@ def reset():
     MeetingType.objects.all().delete()
     Meeting.objects.all().delete()
     MeetingArea.objects.all().delete()
-    Location.objects.all().delete()
+    # Location.objects.all().delete()
     insert_default_meeting_codes()
 
 

@@ -37,6 +37,7 @@ def render_map_js(context):
         x = location.location.x if location.location else None
         y = location.location.y if location.location else None
         meetings.append({'meeting': meeting, 'location': locations, 'x': x, 'y': y})
+        meeting.name = meeting.name.replace("\n", "")
     
     return {
         'meetings': meetings,

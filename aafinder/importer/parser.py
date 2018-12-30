@@ -310,7 +310,7 @@ class Parser:
 
             locations.append({
                 "time": self.time,
-                "name": self.meeting_name,
+                "name": self.meeting_name.replace("\n", " "),
                 "street_address": self.street_address,
                 "location_type": self.location_type,
                 "notes": self.notes,
@@ -350,6 +350,9 @@ class Parser:
                 self.meeting_areas.update({item['area']: area})
             else:
                 area = self.meeting_areas[item['area']]
+            
+            if created:
+                location.save()  # just to make sure.
 
             meeting, created = Meeting.objects.get_or_create(
                 name=item['name'], location=location, time=item['time'],
