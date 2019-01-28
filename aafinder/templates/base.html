@@ -20,40 +20,42 @@
 <body>
 	<div id="root" class="container wrapper">
 		<header class="row">
-			<h2 class="button col-sm col-md col-lg"><a href="{% url 'aafinder:index' %}" class="button">AA San Diego Helper</a></h2>
-			{# <label for="drawer-control" class="drawer-close"></label> #}
+			<h2 class="button col-sm col-md col-lg">
+					<a href="{% url 'aafinder:index' %}" class="button">AA San Diego Helper</a>
+			</h2>
 		</header>
-	
-		{# <input type="checkbox" id="drawer-control" class="drawer"> #}
-		<div class="col-sm col-md col-lg">
-			<div class="collapse">
-				<input type="checkbox" id="collapse-search" aria-hidden="true">
-				<label for="collapse-search" aria-hidden="true">Refine Search</label>
-				<div>
-					<form action="{% url 'aafinder:index' %}" method="post">
-						<fieldset>
-							<legend class="doc">Refine Search</legend>
-							{% csrf_token %}
-							<div class="row">
-								{% if form.errors %}
-									<ul class="errors">
-										{% for error in form.errors %}
-											<li>{{ error }}</li>
-										{% endfor %}
-									</ul>
-								{% endif %}
-								{% for field in form %}
-								<div class="col-lg-2">
-									<label class="doc" for="{{field.id_for_label}}"><strong>{{ field.label }}</strong></label><br />
-										{{ field }}
+		<div class="row">
+			{# <input type="checkbox" id="drawer-control" class="drawer"> #}
+			<div class="col col-sm col-md col-lg">
+				<div class="collapse">
+					<input type="checkbox" id="collapse-search" aria-hidden="true">
+					<label for="collapse-search" aria-hidden="true">Refine Search</label>
+					<div>
+						<form action="{% url 'aafinder:index' %}" method="post">
+							<fieldset>
+								<legend class="doc">Refine Search</legend>
+								{% csrf_token %}
+								<div class="row">
+									{% if form.errors %}
+										<ul class="errors">
+											{% for error in form.errors %}
+												<li>{{ error }}</li>
+											{% endfor %}
+										</ul>
+									{% endif %}
+									{% for field in form %}
+									<div class="col-md">
+										<label class="doc" for="{{field.id_for_label}}"><strong>{{ field.label }}</strong></label><br />
+											{{ field }}
+										</div>
+									{% endfor %}
+									<div class="col-md">
+										<input type="submit" value="Search" />
 									</div>
-								{% endfor %}
-								<div class="col-lg-2">
-									<input type="submit" value="Search" />
 								</div>
-							</div>
-						</fieldset>
-					</form>
+							</fieldset>
+						</form>
+					</div>
 				</div>
 			</div>
 		</div>

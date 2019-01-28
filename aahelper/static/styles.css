@@ -114,7 +114,7 @@ sup {
 }
 
 html {
-    font-size: 16px
+    font-size: 1rem
 }
 
 a,
@@ -757,7 +757,7 @@ a:hover {
 
 @media screen and (min-width:320px) {
     .card {
-        max-width: 320px
+        max-width: 310px
     }
 }
 
@@ -830,7 +830,7 @@ fieldset {
     border: .0625rem solid var(--form-border-color);
     border-radius: var(--universal-border-radius);
     margin: calc(var(--universal-margin)/ 4);
-    padding: var(--universal-padding)
+    /* padding: var(--universal-padding) */
 }
 
 legend {
@@ -904,6 +904,8 @@ label {
 [type=tel],
 [type=checkbox],
 [type=radio],
+[type=time],
+[type=number],
 input:not([type]),
 select,
 textarea {
@@ -943,7 +945,7 @@ textarea[readonly] {
 }
 
 select {
-    max-width: 100%
+    max-width: 85%
 }
 
 option {
@@ -1965,7 +1967,7 @@ progress.inline {
     clip: auto;
     -webkit-clip-path: inset(0);
     clip-path: inset(0);
-    max-height: 400px
+    max-height: 600px
 }
 
 .spinner,

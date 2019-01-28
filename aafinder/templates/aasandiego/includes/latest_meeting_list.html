@@ -1,5 +1,5 @@
 {% load aafinder %}
-<table class="striped hoverable">
+    <table class="striped hoverable">
         <caption>Meetings{% if area and area.id %} for {{area|title}}{% endif %}</caption>
         <thead>
             <tr>
@@ -15,12 +15,22 @@
         <tbody>
             {% for meeting in latest_meeting_list %}
             <tr>
-                <td data-label="Name"><a href="{{meeting.url}}"><span class="icon-location"></span></a>{# <a href="{% url 'aafinder:meeting_detail' pk=meeting.id %}"> #}{{ meeting.name }}{# </a> #}</td>
+                <td data-label="Name"><a href="{{meeting.url}}"><span class="icon-location"></span>{# <a href="{% url 'aafinder:meeting_detail' pk=meeting.id %}"> #}{{ meeting.name|title }}{# </a> #}</td>
                 <td data-label="Time">{{meeting.time}}</td>
                 {% if not index %}<td data-label="Days">{% for m in meeting.types.all %}{{m.type }}{% if not forloop.last %}, {% endif  %}{% endfor %}</td>{% endif %}
                 <td data-label="Area"><a href="{% url 'aafinder:area_detail' slug=meeting.area.slug %}">{{ meeting.area.area }}</a></td>
-                <td data-label="Codes">{% with meeting.codes.all as codes %}{% if codes %}<ul>{% for code in codes %}<li>{{code.description }}</li>{% endfor %}</ul>{% endif %}{% endwith %}</td>
-                <td data-label="Notes">{{meeting.notes}}</td>
+                <td data-label="Codes">
+                    {% with meeting.codes.all as codes %}
+                        {% if codes %}
+                            <div class="col">
+                                {% for code in codes %}
+                                    <div class="col">{{ code.description }}</div><br />
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                </td>
+                <td data-label="Notes">{{ meeting.notes }}</td>
                 {% if not location %}<td data-label="Location"><a href="{% url 'aafinder:meetings_by_location' pk=meeting.location_id %}">Other meetings at this location.</a></td>{% endif %}
             </tr>
             {% endfor %}
