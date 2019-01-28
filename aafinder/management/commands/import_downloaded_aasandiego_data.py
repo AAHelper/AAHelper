@@ -9,7 +9,7 @@ def insert_default_meeting_codes():
         'C': 'CLOSED for Alcoholics & for those "with a desire to stop drinking."',  # noqa: E501
         'M': 'For Men Only',
         'W': 'For Women Only',
-        'LGBT': 'Lesbian/Gay/Transgender/Bisexual',
+        'LGBT': 'Lesbian / Gay / Transgender / Bisexual',
         'BS': 'Babysitting Available',
         '*': 'Wheel Chair Access',
         '+': 'Signed for Hearing Impaired',
