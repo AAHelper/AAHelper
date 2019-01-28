@@ -1,6 +1,8 @@
 from django.urls import include, path, register_converter
 from django.conf import settings
 from . import views
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import RedirectView
 
 
 class TimeConverter:
@@ -19,6 +21,14 @@ register_converter(TimeConverter, 'time')
 app_name = 'aafinder'
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
+    path('site.webmanifest', views.manifest, name="manifest-json"),
+    path('favicon.ico',
+        RedirectView.as_view(
+            url=staticfiles_storage.url('favicons/favicon.ico'),
+            permanent=True),
+        name="favicon"
+    ),
+    path('favicon.ico', views.favicon, name="manifest-json"),
     path('details/<int:pk>/', views.DetailView.as_view(), name='meeting_detail'),
     path('area/<slug:slug>/', views.AreaDetailView.as_view(), name='area_detail'),
     path('location/<int:pk>/', views.LocationDetailView.as_view(), name='meetings_by_location'),
@@ -29,6 +39,7 @@ urlpatterns = [
     # path('<int:pk>/results/', views.ResultsView.as_view(), name='results'),
     # path('<int:question_id>/vote/', views.vote, name='vote'),
 ]
+
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [

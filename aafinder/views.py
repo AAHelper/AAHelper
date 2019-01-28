@@ -7,7 +7,13 @@ from django.shortcuts import redirect
 from .models import Meeting, MeetingArea, MeetingType, Location, MeetingCode
 from .forms import MeetingSearchForm
 from .utils import now
+from django.shortcuts import render
 
+def manifest(request):
+    resp = render(request, 'site.webmanifest')
+    resp.content_type='application/json'
+    print(dir(resp))
+    return resp
 
 class InitialFormMixin:
     form_class = MeetingSearchForm
