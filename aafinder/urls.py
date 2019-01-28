@@ -28,7 +28,6 @@ urlpatterns = [
             permanent=True),
         name="favicon"
     ),
-    path('favicon.ico', views.favicon, name="manifest-json"),
     path('details/<int:pk>/', views.DetailView.as_view(), name='meeting_detail'),
     path('area/<slug:slug>/', views.AreaDetailView.as_view(), name='area_detail'),
     path('location/<int:pk>/', views.LocationDetailView.as_view(), name='meetings_by_location'),
