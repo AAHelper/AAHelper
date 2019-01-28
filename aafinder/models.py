@@ -24,7 +24,6 @@ class Location(models.Model):
                 try:
                     j = resp.json()
                     loc = j['results'][0]['geometry']['location']
-                    print(f'Address: {self.address_string}\tLocation: {loc}')
                     y = loc['lat']
                     x = loc['lng']
                     p = Point(x=x, y=y)
