@@ -3,8 +3,19 @@ from django.utils.html import escapejs
 from django.template import defaultfilters
 from django import template
 import datetime
+import functools
 
-# defaultfilters.time
+CACHE = {}
+
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    chks = []
+    key = ",".join(l)
+    if key not in CACHE:
+        for i in range(0, len(l), n):
+            chks.append(l[i:i + n])
+        CACHE[key] = chks
+    return CACHE[key]
 
 register = template.Library()
 @register.inclusion_tag('aasandiego/inclusion_tags/map_js.html', takes_context=True)
@@ -20,7 +31,9 @@ def render_map_js(context):
             locations[meeting.location].append(meeting)
 
         mtime = meeting.time.strftime("%I:%M %p")
-        days = ",".join(m.type for m in meeting.types.all())
+        meeting_types = sorted([m.type for m in meeting.types.all().order_by('type')])
+        meeting_chunks = chunks(meeting_types, 3)
+        days = "<br />".join(", ".join(chunk) for chunk in meeting_chunks)
         locations[meeting.location].append(
             f'<p>{meeting.name}<br />{days} <br />{mtime}</p><hr />'
         )
