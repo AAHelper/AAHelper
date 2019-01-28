@@ -2308,3 +2308,7 @@ span.icon-user {
         overflow: hidden!important
     }
 }
+
+.text-center {
+    text-align: center!important;
+}
