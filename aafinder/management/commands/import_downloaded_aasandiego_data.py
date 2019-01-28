@@ -23,18 +23,20 @@ def reset():
     MeetingType.objects.all().delete()
     Meeting.objects.all().delete()
     MeetingArea.objects.all().delete()
-    # Location.objects.all().delete()
-    insert_default_meeting_codes()
 
 
 class Command(BaseCommand):
     help = 'Imports all the downloaded aasandiego html files'
 
-    # def add_arguments(self, parser):
-    #     parser.add_argument('poll_id', nargs='+', type=int)
 
     def handle(self, *args, **options):
-        reset()
+        """Import all the downloaded aasandiego.com html files"""
+        # Do not reset the database.
+        # This was done initially when developing, it's no longer
+        # necessary.
+        # reset()
+        insert_default_meeting_codes()
+
         p = Parser()
         count = 0
         try:
