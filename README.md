@@ -14,6 +14,7 @@ This site scrapes meeting data from aasandiego.com into a local database and dis
 
 ## Hosting
 Runs on Heroku: https://sleepy-lowlands-19916.herokuapp.com
+Live site: https://aahelper.com
 
 ## Software:
 
