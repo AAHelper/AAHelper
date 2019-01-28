@@ -93,10 +93,13 @@ WSGI_APPLICATION = 'aahelper.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.contrib.gis.db.backends.spatialite',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+if not ON_HEROKU:
+    SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -154,10 +157,9 @@ if ON_HEROKU:
     SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 
-# Activate Django-Heroku.
-django_heroku.settings(locals())
-DATABASES['default']['ENGINE']='django.contrib.gis.db.backends.postgis'
-print(f"Database: {DATABASES}")
-print(dj_database_url.config(conn_max_age=500, ssl_require=True, engine='django.contrib.gis.db.backends.postgis'))
-GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
-GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
+    # Activate Django-Heroku.
+    django_heroku.settings(locals())
+    DATABASES['default']['ENGINE']='django.contrib.gis.db.backends.postgis'
+    print(dj_database_url.config(conn_max_age=500, ssl_require=True, engine='django.contrib.gis.db.backends.postgis'))
+    GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
+    GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
