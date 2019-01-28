@@ -1,49 +1,42 @@
-# Heroku Django Starter Template
+# AA San Diego Helper
 
-An utterly fantastic project starter template for Django 2.0.
+A helper website for the aasandiego.com site. 
+This site scrapes meeting data from aasandiego.com into a local database and displays it in a friendly way.
 
 ## Features
 
-- Production-ready configuration for Static Files, Database Settings, Gunicorn, etc.
-- Enhancements to Django's static file serving functionality via WhiteNoise.
-- Latest Python 3.6 runtime environment.
+* Displays the next 3 hours of meetings throughout San Diego when visiting aahelper.com
+* Mobile friendly
+* Provides search to see local meetings.
+* Provides direct google map links to the meeting
+* Provides a list of meetings in an area
+* Provides a list of meetings at a location
 
-## How to Use
+## Hosting
+Runs on Heroku: https://sleepy-lowlands-19916.herokuapp.com
 
-To use this project, follow these steps:
-
-1. Create your working environment.
-2. Install Django (`$ pipenv install django`)
-3. Create a new project using this template
-
-## Creating Your Project
-
-Using this template to create a new Django app is easy::
-
-    $ django-admin.py startproject --template=https://github.com/heroku/heroku-django-template/archive/master.zip --name=Procfile helloworld
-
-(If this doesn't work on windows, replace `django-admin.py` with `django-admin`)
-
-You can replace ``helloworld`` with your desired project name.
-
-## Deployment to Heroku
-
-    $ git init
-    $ git add -A
-    $ git commit -m "Initial commit"
-
-    $ heroku create
-    $ git push heroku master
-
-    $ heroku run python manage.py migrate
-
-See also, a [ready-made application](https://github.com/heroku/python-getting-started), ready to deploy.
-
-
-## License: MIT
-
-## Further Reading
+## Software:
 
 - [Gunicorn](https://warehouse.python.org/project/gunicorn/)
 - [WhiteNoise](https://warehouse.python.org/project/whitenoise/)
-- [dj-database-url](https://warehouse.python.org/project/dj-database-url/)
+- [dj-database-url] (https://warehouse.python.org/project/dj-database-url/)
+- [django-starter] (https://github.com/heroku/python-getting-started)
+
+## Contributing
+
+Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/aahelper/aahelper/tags). 
+
+## Authors
+
+* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+
+See also the list of [contributors](https://github.com/aahelper/aahelper/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
