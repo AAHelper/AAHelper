@@ -19,8 +19,8 @@ Runs on Heroku: https://sleepy-lowlands-19916.herokuapp.com
 
 - [Gunicorn](https://warehouse.python.org/project/gunicorn/)
 - [WhiteNoise](https://warehouse.python.org/project/whitenoise/)
-- [dj-database-url] (https://warehouse.python.org/project/dj-database-url/)
-- [django-starter] (https://github.com/heroku/python-getting-started)
+- [dj-database-url](https://warehouse.python.org/project/dj-database-url/)
+- [django-starter](https://github.com/heroku/python-getting-started)
 
 ## Contributing
 
