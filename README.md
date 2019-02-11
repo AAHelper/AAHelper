@@ -3,6 +3,10 @@
 A helper website for the aasandiego.com site. 
 This site scrapes meeting data from aasandiego.com into a local database and displays it in a friendly way.
 
+## Development
+
+Development is done on [GitLab](https://gitlab.com/AAHelper/AAHelper)
+
 ## Features
 
 * Displays the next 3 hours of meetings throughout San Diego when visiting aahelper.com
