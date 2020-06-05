@@ -15,7 +15,7 @@ lxml = "*"
 dj-database-url = "*"
 pip = "==18.0"
 requests = "*"
-django = "==2.1.5"
+django = "==2.2.13"
 
 [dev-packages]
 ipython = "*"
